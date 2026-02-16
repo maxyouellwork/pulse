@@ -1,0 +1,53 @@
+name: Update Train Data
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Every Monday at 6am UTC
+  workflow_dispatch:
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Download SCHEDULE feed
+        run: |
+          curl -L -u "${{ secrets.NR_USERNAME }}:${{ secrets.NR_PASSWORD }}" \
+            "https://publicdatafeeds.networkrail.co.uk/ntrod/CifFileAuthenticate?type=CIF_ALL_FULL_DAILY&day=toc-full" \
+            -o schedule.json.gz
+
+      - name: Download CORPUS reference data
+        run: |
+          curl -L -u "${{ secrets.NR_USERNAME }}:${{ secrets.NR_PASSWORD }}" \
+            "https://publicdatafeeds.networkrail.co.uk/ntrod/SupportingFileAuthenticate?type=CORPUS" \
+            -o corpus.json.gz
+          gunzip corpus.json.gz
+
+      - name: Download station locations CSV
+        run: |
+          curl -L "https://raw.githubusercontent.com/ellcom/UK-Train-Station-Locations/master/uk-train-stations.csv" \
+            -o station_locations.csv
+
+      - name: Run processing script
+        run: |
+          python scripts/process_timetable.py \
+            --schedule schedule.json.gz \
+            --corpus corpus.json \
+            --stations station_locations.csv
+
+      - name: Commit and push if data changed
+        run: |
+          git diff --quiet data/trains.json && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/trains.json
+          git commit -m "Update train data [automated]"
+          git push

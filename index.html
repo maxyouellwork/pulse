@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pulse — Every UK Train in a Day</title>
+  <meta name="description" content="Watch 20,000+ daily UK train services animate across a dark map of Britain.">
+  <meta property="og:title" content="Pulse — Every UK Train in a Day">
+  <meta property="og:description" content="20,000 trains. One island. 90 seconds.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://projects.maxyouell.co.uk/pulse/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://projects.maxyouell.co.uk/pulse/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pulse — Every UK Train in a Day">
+  <meta name="twitter:description" content="20,000 trains. One island. 90 seconds.">
+  <meta name="twitter:image" content="https://projects.maxyouell.co.uk/pulse/og.png">
+
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/deck.gl@9.1.4/dist.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="loading">
+    <div class="loading-content">
+      <div class="loading-pulse"></div>
+      <div class="loading-text">Loading train data<span class="dots"></span></div>
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <header id="header">
+    <h1>PULSE</h1>
+    <p class="subtitle">Every UK train in a day</p>
+  </header>
+
+  <div id="clock">04:00</div>
+
+  <div id="counter">
+    <span id="active-count">0</span> trains running
+  </div>
+
+  <div id="controls">
+    <button id="play-btn" class="control-btn" title="Play/Pause" aria-label="Play or pause animation">
+      <span class="icon-pause">&#10074;&#10074;</span>
+      <span class="icon-play" style="display:none">&#9654;</span>
+    </button>
+    <div id="speed-controls">
+      <button class="speed-btn active" data-speed="1">1&times;</button>
+      <button class="speed-btn" data-speed="2">2&times;</button>
+      <button class="speed-btn" data-speed="5">5&times;</button>
+      <button class="speed-btn" data-speed="10">10&times;</button>
+    </div>
+    <div id="scrubber-wrap">
+      <input type="range" id="scrubber" min="14400" max="91800" value="14400" step="60">
+      <div class="scrubber-labels">
+        <span>04:00</span><span>08:00</span><span>12:00</span><span>16:00</span><span>20:00</span><span>00:00</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="operator-panel">
+    <button id="operator-toggle" class="control-btn" aria-label="Filter by operator">Filter</button>
+    <div id="operator-list" class="hidden"></div>
+  </div>
+
+  <div id="train-info" class="hidden">
+    <button id="train-info-close" aria-label="Close">&times;</button>
+    <div id="train-info-content"></div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,514 @@
+/* ── Reset & Base ─────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a0f;
+  --text: #e0ddd5;
+  --text-dim: #6a6860;
+  --accent: #ffb830;
+  --accent-dim: rgba(255, 184, 48, 0.3);
+  --surface: rgba(10, 10, 15, 0.85);
+  --border: rgba(255, 255, 255, 0.08);
+  --font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Loading Screen ──────────────────────────────────────── */
+#loading {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#loading.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.loading-pulse {
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 4px var(--accent), 0 0 12px var(--accent-dim); transform: scale(1); }
+  50% { box-shadow: 0 0 12px var(--accent), 0 0 40px var(--accent-dim); transform: scale(1.3); }
+}
+
+.loading-text {
+  font-size: 13px;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.dots::after {
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
+/* ── Map ─────────────────────────────────────────────────── */
+#map {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+}
+
+.maplibregl-ctrl-attrib { display: none !important; }
+
+/* ── Header ──────────────────────────────────────────────── */
+#header {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+#header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: var(--accent);
+  line-height: 1;
+  text-shadow: 0 0 30px var(--accent-dim);
+}
+
+.subtitle {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+/* ── Clock ───────────────────────────────────────────────── */
+#clock {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 10;
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Counter ─────────────────────────────────────────────── */
+#counter {
+  position: fixed;
+  top: 72px;
+  right: 24px;
+  z-index: 10;
+  font-size: 13px;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+#active-count {
+  color: var(--accent);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Controls ────────────────────────────────────────────── */
+#controls {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.control-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+#play-btn {
+  min-width: 44px;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+#speed-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.speed-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.speed-btn:hover {
+  color: var(--text);
+}
+
+.speed-btn.active {
+  color: var(--accent);
+  border-color: var(--accent-dim);
+  background: rgba(255, 184, 48, 0.08);
+}
+
+/* ── Scrubber ────────────────────────────────────────────── */
+#scrubber-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+#scrubber {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+#scrubber::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 50%;
+  border: none;
+  box-shadow: 0 0 8px var(--accent-dim);
+  cursor: grab;
+}
+
+#scrubber::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 50%;
+  border: none;
+  box-shadow: 0 0 8px var(--accent-dim);
+  cursor: grab;
+}
+
+.scrubber-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 9px;
+  color: var(--text-dim);
+  opacity: 0.6;
+}
+
+/* ── Operator Panel ──────────────────────────────────────── */
+#operator-panel {
+  position: fixed;
+  top: 90px;
+  left: 24px;
+  z-index: 10;
+}
+
+#operator-list {
+  margin-top: 8px;
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  max-height: 60vh;
+  overflow-y: auto;
+  min-width: 220px;
+}
+
+#operator-list.hidden {
+  display: none;
+}
+
+.operator-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-dim);
+  transition: all 0.15s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  font-family: var(--font-mono);
+  text-align: left;
+}
+
+.operator-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+}
+
+.operator-item.active {
+  color: var(--text);
+}
+
+.operator-item.show-all {
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+  padding-bottom: 10px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.operator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.operator-count {
+  margin-left: auto;
+  opacity: 0.5;
+  font-size: 10px;
+}
+
+/* ── Train Info ──────────────────────────────────────────── */
+#train-info {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  z-index: 10;
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  min-width: 240px;
+  max-width: 300px;
+}
+
+#train-info.hidden {
+  display: none;
+}
+
+#train-info-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+
+#train-info-close:hover {
+  color: var(--text);
+}
+
+.info-operator {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+
+.info-route {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.info-id {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+.info-progress {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.info-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* Header — compact but legible */
+  #header { top: 10px; left: 12px; }
+  #header h1 { font-size: 18px; letter-spacing: 0.2em; }
+  .subtitle { font-size: 9px; letter-spacing: 0.08em; }
+
+  /* Clock & counter — right-aligned, tighter spacing */
+  #clock { top: 10px; right: 12px; font-size: 24px; }
+  #counter { top: 40px; right: 12px; font-size: 10px; }
+
+  /* Controls bar — two-row layout: buttons top, scrubber bottom */
+  #controls {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 12px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    border-radius: 12px 12px 0 0;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  #play-btn {
+    min-width: 40px;
+    padding: 8px 10px;
+  }
+
+  #speed-controls { gap: 2px; }
+
+  .speed-btn {
+    font-size: 11px;
+    padding: 6px 8px;
+    min-width: 36px;
+    min-height: 36px;
+    text-align: center;
+  }
+
+  /* Scrubber fills full width on its own row */
+  #scrubber-wrap {
+    order: 10;
+    flex-basis: 100%;
+  }
+
+  /* Bigger thumb for touch — 44px tap target */
+  #scrubber { height: 6px; }
+  #scrubber::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+  }
+  #scrubber::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* Show fewer time labels to avoid crowding */
+  .scrubber-labels { font-size: 8px; }
+  .scrubber-labels span:nth-child(2n) { display: none; }
+
+  /* Operator panel — full-width dropdown, capped height */
+  #operator-panel { top: 56px; left: 12px; right: 12px; }
+  #operator-toggle { font-size: 11px; padding: 6px 10px; }
+
+  #operator-list {
+    min-width: unset;
+    width: 100%;
+    max-height: 50vh;
+    max-width: none;
+  }
+
+  .operator-item {
+    padding: 8px 8px;
+    font-size: 11px;
+    min-height: 36px;
+  }
+
+  /* Train info — anchored above controls, full width */
+  #train-info {
+    bottom: auto;
+    top: auto;
+    right: 8px;
+    left: 8px;
+    max-width: none;
+    min-width: unset;
+    /* Position above the controls bar (~80px controls height) */
+    bottom: 82px;
+  }
+
+  .info-route { font-size: 14px; }
+  .info-operator { font-size: 9px; }
+  .info-id { font-size: 10px; }
+}
+
+/* ── Very small screens (under 380px) ────────────────────── */
+@media (max-width: 380px) {
+  #header h1 { font-size: 16px; letter-spacing: 0.15em; }
+  .subtitle { display: none; }
+  #clock { font-size: 20px; }
+  #counter { top: 36px; font-size: 9px; }
+
+  .speed-btn {
+    font-size: 10px;
+    padding: 5px 6px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+}
